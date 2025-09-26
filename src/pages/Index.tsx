@@ -31,6 +31,8 @@ const Index = () => {
     { id: 'mma', name: 'MMA', icon: 'Zap' },
     { id: 'karate', name: 'Карате', icon: 'HandMetal' },
     { id: 'kickboxing', name: 'Кикбоксинг', icon: 'Flame' },
+    { id: 'wushu-taolu', name: 'Ушу Таолу', icon: 'Sword' },
+    { id: 'wushu-sanda', name: 'Ушу Саньда', icon: 'ShieldCheck' },
     { id: 'protection', name: 'Защита', icon: 'Shield' }
   ];
 
@@ -40,7 +42,23 @@ const Index = () => {
     { id: 3, name: 'Кимоно для карате', price: 6800, category: 'karate', image: '/img/9afcfeb9-8fb4-4a74-9f72-8d0ff4c91190.jpg', rating: 4.9, inStock: true },
     { id: 4, name: 'Защитные щитки', price: 2100, category: 'protection', image: '/img/69fa4a1c-9e7c-40c5-b489-2d6ea5263fd8.jpg', rating: 4.5, inStock: true },
     { id: 5, name: 'Боксерские бинты', price: 800, category: 'boxing', image: '/img/9afcfeb9-8fb4-4a74-9f72-8d0ff4c91190.jpg', rating: 4.7, inStock: false },
-    { id: 6, name: 'Шлем защитный', price: 5500, category: 'protection', image: '/img/5eb32cee-5128-49fc-b70f-2bd111b1f30b.jpg', rating: 4.4, inStock: true }
+    { id: 6, name: 'Шлем защитный', price: 5500, category: 'protection', image: '/img/5eb32cee-5128-49fc-b70f-2bd111b1f30b.jpg', rating: 4.4, inStock: true },
+    
+    // Ушу Таолу - традиционные формы и оружие
+    { id: 7, name: 'Костюм для Ушу Таолу', price: 8900, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.9, inStock: true },
+    { id: 8, name: 'Меч Цзянь (прямой)', price: 12500, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.7, inStock: true },
+    { id: 9, name: 'Сабля Дао (изогнутая)', price: 11800, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.8, inStock: true },
+    { id: 10, name: 'Шест Гунь 1.8м', price: 3200, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.6, inStock: true },
+    { id: 11, name: 'Копье Цян 2.6м', price: 4800, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.5, inStock: false },
+    { id: 12, name: 'Обувь для Ушу', price: 2800, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.4, inStock: true },
+    
+    // Ушу Саньда - спарринговое снаряжение
+    { id: 13, name: 'Перчатки Саньда', price: 3800, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.7, inStock: true },
+    { id: 14, name: 'Шлем для Саньда', price: 4200, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.6, inStock: true },
+    { id: 15, name: 'Защита голени Саньда', price: 2900, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.8, inStock: true },
+    { id: 16, name: 'Жилет защитный Саньда', price: 6800, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.5, inStock: true },
+    { id: 17, name: 'Шорты для Саньда', price: 2200, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.3, inStock: true },
+    { id: 18, name: 'Защита паха Саньда', price: 1800, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.4, inStock: true }
   ];
 
   const filteredProducts = selectedCategory === 'all' 
