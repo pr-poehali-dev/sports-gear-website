@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import ProductFilters from '@/components/ProductFilters';
+import useProductFilters, { Product as FilterProduct } from '@/hooks/useProductFilters';
 
 interface Product {
   id: number;
@@ -24,6 +28,8 @@ const Index = () => {
   const navigate = useNavigate();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [showFilters, setShowFilters] = useState(false);
+  const [quickSearchQuery, setQuickSearchQuery] = useState('');
 
   const categories = [
     { id: 'all', name: 'Все категории', icon: 'Grid3X3' },
@@ -36,36 +42,52 @@ const Index = () => {
     { id: 'protection', name: 'Защита', icon: 'Shield' }
   ];
 
-  const products: Product[] = [
-    { id: 1, name: 'Боксерские перчатки Pro', price: 4500, category: 'boxing', image: '/img/69fa4a1c-9e7c-40c5-b489-2d6ea5263fd8.jpg', rating: 4.8, inStock: true },
-    { id: 2, name: 'Перчатки для MMA', price: 3200, category: 'mma', image: '/img/5eb32cee-5128-49fc-b70f-2bd111b1f30b.jpg', rating: 4.6, inStock: true },
-    { id: 3, name: 'Кимоно для карате', price: 6800, category: 'karate', image: '/img/9afcfeb9-8fb4-4a74-9f72-8d0ff4c91190.jpg', rating: 4.9, inStock: true },
-    { id: 4, name: 'Защитные щитки', price: 2100, category: 'protection', image: '/img/69fa4a1c-9e7c-40c5-b489-2d6ea5263fd8.jpg', rating: 4.5, inStock: true },
-    { id: 5, name: 'Боксерские бинты', price: 800, category: 'boxing', image: '/img/9afcfeb9-8fb4-4a74-9f72-8d0ff4c91190.jpg', rating: 4.7, inStock: false },
-    { id: 6, name: 'Шлем защитный', price: 5500, category: 'protection', image: '/img/5eb32cee-5128-49fc-b70f-2bd111b1f30b.jpg', rating: 4.4, inStock: true },
+  const products: FilterProduct[] = [
+    { id: '1', name: 'Боксерские перчатки Pro', price: 4500, category: 'boxing', image: '/img/69fa4a1c-9e7c-40c5-b489-2d6ea5263fd8.jpg', rating: 4.8, inStock: true, brand: 'Everlast', sizes: ['8oz', '10oz', '12oz', '14oz', '16oz'], colors: [{name: 'Красный', value: '#dc2626', available: true}, {name: 'Черный', value: '#000000', available: true}, {name: 'Синий', value: '#2563eb', available: true}], images: ['/img/69fa4a1c-9e7c-40c5-b489-2d6ea5263fd8.jpg'], reviewsCount: 124, description: 'Профессиональные боксерские перчатки для тренировок и соревнований', features: ['Натуральная кожа', 'Многослойная набивка', 'Анатомический крой'], specifications: {'Материал': 'Натуральная кожа', 'Застежка': 'Липучка', 'Назначение': 'Тренировки, соревнования'}, isNew: false, popularity: 95 },
+    { id: '2', name: 'Перчатки для MMA', price: 3200, category: 'mma', image: '/img/5eb32cee-5128-49fc-b70f-2bd111b1f30b.jpg', rating: 4.6, inStock: true, brand: 'Venum', sizes: ['S', 'M', 'L', 'XL'], colors: [{name: 'Черный', value: '#000000', available: true}, {name: 'Белый', value: '#ffffff', available: true}], images: ['/img/5eb32cee-5128-49fc-b70f-2bd111b1f30b.jpg'], reviewsCount: 89, description: 'Перчатки для смешанных единоборств с открытыми пальцами', features: ['Синтетическая кожа', 'Гелевая защита', 'Открытые пальцы'], specifications: {'Материал': 'Синтетическая кожа', 'Застежка': 'Липучка', 'Вес': '150г'}, isNew: true, popularity: 87 },
+    { id: '3', name: 'Кимоно для карате', price: 6800, category: 'karate', image: '/img/9afcfeb9-8fb4-4a74-9f72-8d0ff4c91190.jpg', rating: 4.9, inStock: true, brand: 'Adidas', sizes: ['140', '150', '160', '170', '180', '190'], colors: [{name: 'Белый', value: '#ffffff', available: true}], images: ['/img/9afcfeb9-8fb4-4a74-9f72-8d0ff4c91190.jpg'], reviewsCount: 156, description: 'Традиционное кимоно для карате из хлопка высокого качества', features: ['100% хлопок', 'Укрепленные швы', 'Пояс в комплекте'], specifications: {'Материал': '100% хлопок', 'Плотность': '12 унций', 'Комплектация': 'Куртка, штаны, пояс'}, isNew: false, popularity: 92 },
+    { id: '4', name: 'Защитные щитки', price: 2100, category: 'protection', image: '/img/69fa4a1c-9e7c-40c5-b489-2d6ea5263fd8.jpg', rating: 4.5, inStock: true, brand: 'TopTen', sizes: ['S', 'M', 'L'], colors: [{name: 'Синий', value: '#2563eb', available: true}, {name: 'Красный', value: '#dc2626', available: true}], images: ['/img/69fa4a1c-9e7c-40c5-b489-2d6ea5263fd8.jpg'], reviewsCount: 67, description: 'Защитные щитки для голени и стопы', features: ['Легкий вес', 'Удобная фиксация', 'Эластичные ремни'], specifications: {'Материал': 'Полиуретан', 'Вес': '400г', 'Защита': 'Голень и стопа'}, isNew: false, popularity: 74 },
+    { id: '5', name: 'Боксерские бинты', price: 800, category: 'boxing', image: '/img/9afcfeb9-8fb4-4a74-9f72-8d0ff4c91190.jpg', rating: 4.7, inStock: false, brand: 'Twins', sizes: ['3.5м', '4.5м'], colors: [{name: 'Черный', value: '#000000', available: true}, {name: 'Красный', value: '#dc2626', available: false}], images: ['/img/9afcfeb9-8fb4-4a74-9f72-8d0ff4c91190.jpg'], reviewsCount: 234, description: 'Эластичные боксерские бинты для защиты рук', features: ['100% хлопок', 'Эластичная вставка', 'Липучка-застежка'], specifications: {'Материал': '100% хлопок', 'Длина': '4.5 метра', 'Ширина': '5 см'}, isNew: false, popularity: 98 },
+    { id: '6', name: 'Шлем защитный', price: 5500, category: 'protection', image: '/img/5eb32cee-5128-49fc-b70f-2bd111b1f30b.jpg', rating: 4.4, inStock: true, brand: 'Winning', sizes: ['S', 'M', 'L', 'XL'], colors: [{name: 'Черный', value: '#000000', available: true}, {name: 'Красный', value: '#dc2626', available: true}], images: ['/img/5eb32cee-5128-49fc-b70f-2bd111b1f30b.jpg'], reviewsCount: 45, description: 'Защитный шлем для спаррингов', features: ['Открытый верх', 'Защита подбородка', 'Вентиляционные отверстия'], specifications: {'Материал': 'Натуральная кожа', 'Защита': 'Лицо, подбородок', 'Вентиляция': 'Есть'}, isNew: false, popularity: 81 },
     
     // Ушу Таолу - традиционные формы и оружие
-    { id: 7, name: 'Костюм для Ушу Таолу', price: 8900, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.9, inStock: true },
-    { id: 8, name: 'Меч Цзянь (прямой)', price: 12500, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.7, inStock: true },
-    { id: 9, name: 'Сабля Дао (изогнутая)', price: 11800, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.8, inStock: true },
-    { id: 10, name: 'Шест Гунь 1.8м', price: 3200, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.6, inStock: true },
-    { id: 11, name: 'Копье Цян 2.6м', price: 4800, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.5, inStock: false },
-    { id: 12, name: 'Обувь для Ушу', price: 2800, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.4, inStock: true },
+    { id: '7', name: 'Костюм для Ушу Таолу', price: 8900, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.9, inStock: true, brand: 'Red Dragon', sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'], colors: [{name: 'Золотой', value: '#fbbf24', available: true}, {name: 'Красный', value: '#dc2626', available: true}, {name: 'Синий', value: '#2563eb', available: true}], images: ['/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg'], reviewsCount: 78, description: 'Традиционный костюм для выступлений Ушу Таолу', features: ['Шелковистая ткань', 'Вышивка дракона', 'Эластичный пояс'], specifications: {'Материал': 'Полиэстер-сатин', 'Покрой': 'Традиционный', 'Уход': 'Ручная стирка'}, isNew: true, popularity: 85 },
+    { id: '8', name: 'Меч Цзянь (прямой)', price: 12500, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.7, inStock: true, brand: 'Dynasty Forge', sizes: ['75см', '80см', '85см', '90см', '95см'], colors: [{name: 'Серебристый', value: '#6b7280', available: true}], images: ['/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg'], reviewsCount: 34, description: 'Традиционный прямой меч Цзянь для Ушу', features: ['Углеродистая сталь', 'Традиционная рукоять', 'Сбалансированный'], specifications: {'Материал клинка': 'Углеродистая сталь', 'Длина клинка': '75-95см', 'Вес': '500-700г'}, isNew: false, popularity: 65 },
+    { id: '9', name: 'Сабля Дао (изогнутая)', price: 11800, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.8, inStock: true, brand: 'Dynasty Forge', sizes: ['75см', '80см', '85см', '90см'], colors: [{name: 'Серебристый', value: '#6b7280', available: true}], images: ['/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg'], reviewsCount: 29, description: 'Традиционная изогнутая сабля Дао для Ушу', features: ['Высокоуглеродистая сталь', 'Эргономичная рукоять', 'Изогнутый клинок'], specifications: {'Материал клинка': 'Высокоуглеродистая сталь', 'Изгиб': 'Традиционный', 'Баланс': 'Центральный'}, isNew: false, popularity: 58 },
+    { id: '10', name: 'Шест Гунь 1.8м', price: 3200, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.6, inStock: true, brand: 'Bamboo Master', sizes: ['1.6м', '1.8м', '2.0м', '2.2м'], colors: [{name: 'Натуральный', value: '#d97706', available: true}], images: ['/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg'], reviewsCount: 56, description: 'Деревянный шест Гунь для тренировок Ушу', features: ['Белый дуб', 'Гладкая поверхность', 'Сбалансированный'], specifications: {'Материал': 'Белый дуб', 'Диаметр': '3см', 'Обработка': 'Лакированный'}, isNew: false, popularity: 72 },
+    { id: '11', name: 'Копье Цян 2.6м', price: 4800, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.5, inStock: false, brand: 'Bamboo Master', sizes: ['2.4м', '2.6м', '2.8м'], colors: [{name: 'Натуральный', value: '#d97706', available: true}], images: ['/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg'], reviewsCount: 23, description: 'Копье Цян с металлическим наконечником', features: ['Древко из дуба', 'Стальной наконечник', 'Кисточка в комплекте'], specifications: {'Материал древка': 'Белый дуб', 'Наконечник': 'Нержавеющая сталь', 'Длина наконечника': '25см'}, isNew: true, popularity: 41 },
+    { id: '12', name: 'Обувь для Ушу', price: 2800, category: 'wushu-taolu', image: '/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg', rating: 4.4, inStock: true, brand: 'Feiyue', sizes: ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45'], colors: [{name: 'Черный', value: '#000000', available: true}, {name: 'Белый', value: '#ffffff', available: true}], images: ['/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg'], reviewsCount: 167, description: 'Традиционная обувь для Ушу с тонкой подошвой', features: ['Тонкая подошва', 'Дышащий материал', 'Надежная фиксация'], specifications: {'Материал верха': 'Хлопок', 'Подошва': 'Резина', 'Высота': 'Низкие'}, isNew: false, popularity: 89 },
     
     // Ушу Саньда - спарринговое снаряжение
-    { id: 13, name: 'Перчатки Саньда', price: 3800, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.7, inStock: true },
-    { id: 14, name: 'Шлем для Саньда', price: 4200, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.6, inStock: true },
-    { id: 15, name: 'Защита голени Саньда', price: 2900, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.8, inStock: true },
-    { id: 16, name: 'Жилет защитный Саньда', price: 6800, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.5, inStock: true },
-    { id: 17, name: 'Шорты для Саньда', price: 2200, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.3, inStock: true },
-    { id: 18, name: 'Защита паха Саньда', price: 1800, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.4, inStock: true }
+    { id: '13', name: 'Перчатки Саньда', price: 3800, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.7, inStock: true, brand: 'TopTen', sizes: ['S', 'M', 'L', 'XL'], colors: [{name: 'Красный', value: '#dc2626', available: true}, {name: 'Синий', value: '#2563eb', available: true}], images: ['/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg'], reviewsCount: 91, description: 'Перчатки для Саньда с защитой пальцев', features: ['Открытые пальцы', 'Защита костяшек', 'Липучка'], specifications: {'Материал': 'Синтетическая кожа', 'Набивка': 'Пена высокой плотности', 'Вес': '180г'}, isNew: false, popularity: 76 },
+    { id: '14', name: 'Шлем для Саньда', price: 4200, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.6, inStock: true, brand: 'TopTen', sizes: ['S', 'M', 'L', 'XL'], colors: [{name: 'Красный', value: '#dc2626', available: true}, {name: 'Синий', value: '#2563eb', available: true}], images: ['/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg'], reviewsCount: 54, description: 'Защитный шлем для Саньда с маской', features: ['Защитная маска', 'Вентиляция', 'Регулируемые ремни'], specifications: {'Материал': 'ПУ кожа', 'Защита': 'Голова, лицо', 'Вентиляция': '8 отверстий'}, isNew: false, popularity: 68 },
+    { id: '15', name: 'Защита голени Саньда', price: 2900, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.8, inStock: true, brand: 'TopTen', sizes: ['S', 'M', 'L', 'XL'], colors: [{name: 'Красный', value: '#dc2626', available: true}, {name: 'Синий', value: '#2563eb', available: true}], images: ['/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg'], reviewsCount: 112, description: 'Защитные щитки для голени в Саньда', features: ['Анатомическая форма', 'Легкий вес', 'Эластичные ремни'], specifications: {'Материал': 'ПВХ', 'Крепление': 'Эластичные ремни', 'Вес': '350г'}, isNew: false, popularity: 84 },
+    { id: '16', name: 'Жилет защитный Саньда', price: 6800, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.5, inStock: true, brand: 'TopTen', sizes: ['XS', 'S', 'M', 'L', 'XL'], colors: [{name: 'Красный', value: '#dc2626', available: true}, {name: 'Синий', value: '#2563eb', available: true}], images: ['/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg'], reviewsCount: 43, description: 'Защитный жилет для корпуса в Саньда', features: ['Защита корпуса', 'Дышащий материал', 'Регулируемые ремни'], specifications: {'Материал': 'ПУ кожа', 'Защита': 'Грудь, живот, спина', 'Крепление': 'Липучки'}, isNew: true, popularity: 52 },
+    { id: '17', name: 'Шорты для Саньда', price: 2200, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.3, inStock: true, brand: 'TopTen', sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'], colors: [{name: 'Красный', value: '#dc2626', available: true}, {name: 'Синий', value: '#2563eb', available: true}, {name: 'Черный', value: '#000000', available: true}], images: ['/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg'], reviewsCount: 78, description: 'Шорты для тренировок Саньда', features: ['Эластичная ткань', 'Боковые разрезы', 'Быстрое высыхание'], specifications: {'Материал': 'Полиэстер', 'Крой': 'Свободный', 'Длина': 'Выше колена'}, isNew: false, popularity: 71 },
+    { id: '18', name: 'Защита паха Саньда', price: 1800, category: 'wushu-sanda', image: '/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg', rating: 4.4, inStock: true, brand: 'TopTen', sizes: ['S', 'M', 'L'], colors: [{name: 'Белый', value: '#ffffff', available: true}], images: ['/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg'], reviewsCount: 67, description: 'Защита паха для мужчин в Саньда', features: ['Анатомическая чашка', 'Эластичный пояс', 'Дышащая ткань'], specifications: {'Материал чашки': 'Полипропилен', 'Пояс': 'Эластичный', 'Размер чашки': 'Стандартный'}, isNew: false, popularity: 63 }
   ];
 
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(product => product.category === selectedCategory);
+  // Initialize filters hook
+  const {
+    filters,
+    setFilters,
+    filteredProducts: allFilteredProducts,
+    availableOptions,
+    priceRange,
+    totalProducts,
+    filteredProductsCount
+  } = useProductFilters(products);
 
-  const addToCart = (productId: number) => {
+  // Apply category filter and quick search
+  const filteredProducts = allFilteredProducts.filter(product => {
+    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+    const matchesQuickSearch = !quickSearchQuery || 
+      product.name.toLowerCase().includes(quickSearchQuery.toLowerCase()) ||
+      product.brand.toLowerCase().includes(quickSearchQuery.toLowerCase());
+    return matchesCategory && matchesQuickSearch;
+  });
+
+  const addToCart = (productId: string) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === productId);
       if (existingItem) {
@@ -102,9 +124,26 @@ const Index = () => {
               <Icon name="Phone" className="h-4 w-4" />
               <span>+7 (800) 123-45-67</span>
             </div>
-            <Button variant="ghost" size="sm">
-              <Icon name="Search" className="h-5 w-5" />
-            </Button>
+            <div className="hidden md:flex items-center space-x-2">
+              <div className="relative">
+                <Input
+                  placeholder="Быстрый поиск..."
+                  value={quickSearchQuery}
+                  onChange={(e) => setQuickSearchQuery(e.target.value)}
+                  className="w-64 pl-10"
+                />
+                <Icon name="Search" className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground/50" />
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className={showFilters ? 'bg-primary/10' : ''}
+              >
+                <Icon name="Filter" className="h-5 w-5" />
+                Фильтры
+              </Button>
+            </div>
             <Button variant="ghost" size="sm">
               <Icon name="User" className="h-5 w-5" />
             </Button>
@@ -155,6 +194,84 @@ const Index = () => {
           </p>
         </div>
         
+        {showFilters && (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+            <div className="lg:col-span-1">
+              <ProductFilters
+                filters={filters}
+                onFiltersChange={setFilters}
+                availableCategories={availableOptions.categories}
+                availableSizes={availableOptions.sizes}
+                availableColors={availableOptions.colors}
+                availableBrands={availableOptions.brands}
+                priceRange={priceRange}
+                totalProducts={totalProducts}
+                filteredProducts={filteredProductsCount}
+              />
+            </div>
+            <div className="lg:col-span-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {allFilteredProducts.map((product) => (
+                  <Card 
+                    key={product.id} 
+                    className="group cursor-pointer transition-all duration-200 hover:shadow-xl hover:scale-[1.02] animate-fade-in"
+                    onClick={() => navigate(`/product/${product.id}`)}
+                  >
+                    <CardContent className="p-0">
+                      <div className="relative overflow-hidden rounded-t-lg">
+                        <img 
+                          src={product.images[0]} 
+                          alt={product.name}
+                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                        {!product.inStock && (
+                          <Badge className="absolute top-3 left-3 bg-destructive">
+                            Нет в наличии
+                          </Badge>
+                        )}
+                        {product.isNew && (
+                          <Badge className="absolute top-3 left-3 bg-green-600">
+                            Новинка
+                          </Badge>
+                        )}
+                        <Badge className="absolute top-3 right-3 bg-accent">
+                          ★ {product.rating}
+                        </Badge>
+                      </div>
+                      
+                      <div className="p-4">
+                        <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
+                          {product.name}
+                        </h3>
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-2xl font-bold text-primary">
+                            {product.price.toLocaleString()} ₽
+                          </span>
+                          <Badge variant="outline" className="text-xs">
+                            {product.brand}
+                          </Badge>
+                        </div>
+                        
+                        <Button 
+                          className="w-full" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(product.id);
+                          }}
+                          disabled={!product.inStock}
+                        >
+                          <Icon name="Plus" className="mr-2 h-4 w-4" />
+                          {product.inStock ? 'В корзину' : 'Недоступно'}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
           {categories.map((category) => (
             <Card 
@@ -176,6 +293,27 @@ const Index = () => {
           ))}
         </div>
 
+        {/* Quick Sort */}
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-semibold">
+            {selectedCategory === 'all' ? 'Все товары' : categories.find(cat => cat.id === selectedCategory)?.name} 
+            <span className="text-foreground/60 ml-2">({filteredProducts.length})</span>
+          </h3>
+          <Select value={filters.sortBy} onValueChange={(value) => setFilters({...filters, sortBy: value})}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="popular">По популярности</SelectItem>
+              <SelectItem value="price-asc">Цена: по возрастанию</SelectItem>
+              <SelectItem value="price-desc">Цена: по убыванию</SelectItem>
+              <SelectItem value="newest">Новинки</SelectItem>
+              <SelectItem value="rating">По рейтингу</SelectItem>
+              <SelectItem value="name">По названию</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
@@ -187,13 +325,18 @@ const Index = () => {
               <CardContent className="p-0">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img 
-                    src={product.image} 
+                    src={product.images[0]} 
                     alt={product.name}
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   {!product.inStock && (
                     <Badge className="absolute top-3 left-3 bg-destructive">
                       Нет в наличии
+                    </Badge>
+                  )}
+                  {product.isNew && (
+                    <Badge className="absolute top-3 left-3 bg-green-600">
+                      Новинка
                     </Badge>
                   )}
                   <Badge className="absolute top-3 right-3 bg-accent">
@@ -205,6 +348,7 @@ const Index = () => {
                   <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
                     {product.name}
                   </h3>
+                  <div className="text-sm text-foreground/60 mb-2">{product.brand}</div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-2xl font-bold text-primary">
                       {product.price.toLocaleString()} ₽
