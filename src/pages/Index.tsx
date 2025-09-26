@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +21,7 @@ interface CartItem {
 }
 
 const Index = () => {
+  const navigate = useNavigate();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -159,7 +161,11 @@ const Index = () => {
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <Card key={product.id} className="group cursor-pointer transition-all duration-200 hover:shadow-xl hover:scale-[1.02] animate-fade-in">
+            <Card 
+              key={product.id} 
+              className="group cursor-pointer transition-all duration-200 hover:shadow-xl hover:scale-[1.02] animate-fade-in"
+              onClick={() => navigate(`/product/${product.id}`)}
+            >
               <CardContent className="p-0">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img 
