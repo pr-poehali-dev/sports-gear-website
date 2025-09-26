@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import WushuSizeCalculator from '@/components/WushuSizeCalculator';
 import Icon from '@/components/ui/icon';
 
 interface Product {
@@ -27,52 +28,145 @@ interface Product {
 
 const ProductDetail = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
+  const [showSizeCalculator, setShowSizeCalculator] = useState(false);
 
-  // Sample product data
-  const product: Product = {
-    id: 1,
-    name: 'Профессиональные боксерские перчатки Pro Fighter',
-    price: 4500,
-    originalPrice: 5200,
-    category: 'boxing',
-    images: [
-      '/img/69fa4a1c-9e7c-40c5-b489-2d6ea5263fd8.jpg',
-      '/img/9afcfeb9-8fb4-4a74-9f72-8d0ff4c91190.jpg',
-      '/img/5eb32cee-5128-49fc-b70f-2bd111b1f30b.jpg'
-    ],
-    rating: 4.8,
-    reviewsCount: 127,
-    inStock: true,
-    brand: 'ProFighter',
-    description: 'Профессиональные боксерские перчатки, изготовленные из высококачественной натуральной кожи. Идеально подходят как для тренировок, так и для соревнований. Анатомическая форма обеспечивает максимальный комфорт и защиту.',
-    features: [
-      'Натуральная кожа премиум класса',
-      'Многослойная система амортизации',
-      'Анатомическая форма для комфорта',
-      'Усиленная защита запястья',
-      'Дышащая подкладка с антибактериальной обработкой',
-      'Professional grade качество'
-    ],
-    specifications: {
-      'Материал': 'Натуральная кожа',
-      'Наполнитель': 'Многослойный пенополиуретан',
-      'Застежка': 'Липучка с дополнительной шнуровкой',
-      'Вес': 'От 8 до 16 унций',
-      'Страна производства': 'Таиланд',
-      'Гарантия': '12 месяцев'
-    },
-    sizes: ['8 oz', '10 oz', '12 oz', '14 oz', '16 oz'],
-    colors: [
-      { name: 'Красный', value: '#DC2626', available: true },
-      { name: 'Черный', value: '#1F2937', available: true },
-      { name: 'Синий', value: '#2563EB', available: true },
-      { name: 'Белый', value: '#F9FAFB', available: false }
-    ]
+  // Sample product data - можно расширить базой данных товаров
+  const getProductData = (productId: string): Product => {
+    const products = {
+      '1': {
+        id: 1,
+        name: 'Профессиональные боксерские перчатки Pro Fighter',
+        price: 4500,
+        originalPrice: 5200,
+        category: 'boxing',
+        images: ['/img/69fa4a1c-9e7c-40c5-b489-2d6ea5263fd8.jpg', '/img/9afcfeb9-8fb4-4a74-9f72-8d0ff4c91190.jpg'],
+        rating: 4.8,
+        reviewsCount: 127,
+        inStock: true,
+        brand: 'ProFighter',
+        description: 'Профессиональные боксерские перчатки для тренировок и соревнований.',
+        features: ['Натуральная кожа', 'Многослойная амортизация', 'Анатомическая форма'],
+        specifications: { 'Материал': 'Натуральная кожа', 'Вес': 'От 8 до 16 унций', 'Гарантия': '12 месяцев' },
+        sizes: ['8 oz', '10 oz', '12 oz', '14 oz', '16 oz'],
+        colors: [
+          { name: 'Красный', value: '#DC2626', available: true },
+          { name: 'Черный', value: '#1F2937', available: true }
+        ]
+      },
+      '8': {
+        id: 8,
+        name: 'Меч Цзянь (прямой) для Ушу Таолу',
+        price: 12500,
+        originalPrice: 14000,
+        category: 'wushu-taolu',
+        images: ['/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg'],
+        rating: 4.7,
+        reviewsCount: 45,
+        inStock: true,
+        brand: 'Dragon Phoenix',
+        description: 'Традиционный китайский меч для выполнения форм Таолу. Изготовлен из высокоуглеродистой стали с гибким лезвием.',
+        features: [
+          'Высокоуглеродистая сталь',
+          'Гибкое лезвие для форм',
+          'Традиционная рукоять с кистями',
+          'Сертифицировано для соревнований',
+          'Ручная ковка мастеров',
+          'Аутентичный китайский дизайн'
+        ],
+        specifications: {
+          'Материал лезвия': 'Высокоуглеродистая сталь',
+          'Рукоять': 'Дерево с обмоткой',
+          'Общая длина': '65-85см (в зависимости от роста)',
+          'Вес': '450-650г',
+          'Гибкость': 'Средняя-высокая',
+          'Страна производства': 'Китай',
+          'Гарантия': '24 месяца'
+        },
+        sizes: ['65см', '70см', '75см', '80см', '85см'],
+        colors: [
+          { name: 'Традиционный', value: '#C0C0C0', available: true },
+          { name: 'Золотистый', value: '#FFD700', available: true }
+        ]
+      },
+      '10': {
+        id: 10,
+        name: 'Шест Гунь 1.8м для Ушу Таолу',
+        price: 3200,
+        category: 'wushu-taolu',
+        images: ['/img/af2caae0-6a55-4978-8898-fc71a6dea34f.jpg'],
+        rating: 4.6,
+        reviewsCount: 38,
+        inStock: true,
+        brand: 'Shaolin Gear',
+        description: 'Традиционный шест для выполнения форм с длинным оружием. Изготовлен из белого воскового дерева.',
+        features: [
+          'Белое восковое дерево',
+          'Оптимальная гибкость',
+          'Традиционная обработка',
+          'Идеальный баланс',
+          'Подходит для всех стилей',
+          'Профессиональное качество'
+        ],
+        specifications: {
+          'Материал': 'Белое восковое дерево',
+          'Длина': '1.6м - 2.0м',
+          'Диаметр': '2.4-2.8см',
+          'Вес': '350-450г',
+          'Обработка': 'Лакированная',
+          'Страна производства': 'Китай',
+          'Гарантия': '12 месяцев'
+        },
+        sizes: ['1.6м', '1.8м', '2.0м'],
+        colors: [
+          { name: 'Натуральное дерево', value: '#DEB887', available: true }
+        ]
+      },
+      '13': {
+        id: 13,
+        name: 'Перчатки для Ушу Саньда',
+        price: 3800,
+        category: 'wushu-sanda',
+        images: ['/img/5f228d1a-93b8-4aff-b914-ab546ee337a8.jpg'],
+        rating: 4.7,
+        reviewsCount: 63,
+        inStock: true,
+        brand: 'Fighting Dragon',
+        description: 'Специализированные перчатки для спарринга в Саньда с открытыми пальцами для захватов.',
+        features: [
+          'Открытые пальцы для захватов',
+          'Усиленная защита костяшек',
+          'Кожаная поверхность',
+          'Липучка на запястье',
+          'Дышащая подкладка',
+          'Сертификация IWUF'
+        ],
+        specifications: {
+          'Материал': 'Натуральная кожа',
+          'Наполнитель': 'Высокоплотная пена',
+          'Вес': 'S: 4oz, M: 6oz, L: 8oz',
+          'Застежка': 'Липучка',
+          'Сертификация': 'IWUF approved',
+          'Страна производства': 'Китай',
+          'Гарантия': '18 месяцев'
+        },
+        sizes: ['S', 'M', 'L', 'XL'],
+        colors: [
+          { name: 'Красный', value: '#DC2626', available: true },
+          { name: 'Синий', value: '#2563EB', available: true },
+          { name: 'Черный', value: '#1F2937', available: true }
+        ]
+      }
+    };
+    
+    return products[productId as keyof typeof products] || products['1'];
   };
+
+  const product = getProductData(id || '1');
 
   const reviews = [
     {
@@ -244,7 +338,41 @@ const ProductDetail = () => {
 
             {/* Size Selection */}
             <div>
-              <h3 className="font-semibold mb-3">Размер:</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold">Размер:</h3>
+                {(product.category === 'wushu-taolu' && ['sword', 'staff', 'spear'].some(type => 
+                  product.name.toLowerCase().includes(type) || 
+                  product.name.includes('меч') || 
+                  product.name.includes('шест') || 
+                  product.name.includes('копье')
+                )) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowSizeCalculator(!showSizeCalculator)}
+                    className="text-xs"
+                  >
+                    <Icon name="Calculator" className="mr-1 h-3 w-3" />
+                    Калькулятор размера
+                  </Button>
+                )}
+              </div>
+              
+              {showSizeCalculator && product.category === 'wushu-taolu' && (
+                <div className="mb-4 p-4 border rounded-lg bg-muted/20">
+                  <WushuSizeCalculator 
+                    weaponType={
+                      product.name.includes('меч') || product.name.toLowerCase().includes('sword') ? 'sword' :
+                      product.name.includes('шест') || product.name.toLowerCase().includes('staff') ? 'staff' :
+                      product.name.includes('копье') || product.name.toLowerCase().includes('spear') ? 'spear' : 'sword'
+                    }
+                    onSizeRecommended={(recommendation) => {
+                      console.log('Recommended:', recommendation);
+                    }}
+                  />
+                </div>
+              )}
+              
               <div className="flex flex-wrap gap-2">
                 {product.sizes.map((size) => (
                   <Button
@@ -257,6 +385,13 @@ const ProductDetail = () => {
                   </Button>
                 ))}
               </div>
+              
+              {product.category === 'wushu-taolu' && (
+                <p className="text-xs text-foreground/60 mt-2">
+                  <Icon name="Info" className="inline h-3 w-3 mr-1" />
+                  Для традиционного оружия Ушу размер критически важен для правильной техники
+                </p>
+              )}
             </div>
 
             {/* Color Selection */}
