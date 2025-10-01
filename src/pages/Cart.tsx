@@ -323,7 +323,7 @@ const Cart = () => {
                   </div>
                 )}
 
-                <Button size="lg" className="w-full mb-3">
+                <Button size="lg" className="w-full mb-3" onClick={() => navigate('/checkout')}>
                   <Icon name="CreditCard" className="mr-2 h-5 w-5" />
                   Оформить заказ
                 </Button>
