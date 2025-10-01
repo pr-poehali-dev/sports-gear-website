@@ -23,6 +23,14 @@ const ProductHeader = () => {
               <Icon name="ArrowLeft" className="mr-2 h-4 w-4" />
               Назад к каталогу
             </Button>
+            <Button 
+              variant="ghost" 
+              className="text-foreground/80 hover:text-foreground"
+              onClick={() => navigate('/order-tracking')}
+            >
+              <Icon name="Package" className="mr-2 h-4 w-4" />
+              Мои заказы
+            </Button>
           </nav>
         </div>
         

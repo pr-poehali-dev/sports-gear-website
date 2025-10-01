@@ -105,6 +105,8 @@ const Checkout = () => {
     
     const orderData = {
       orderNumber,
+      date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
+      status: 'pending',
       formData,
       deliveryMethod,
       paymentMethod,
@@ -113,6 +115,11 @@ const Checkout = () => {
       deliveryPrice,
       subtotal
     };
+
+    const savedOrders = localStorage.getItem('orders');
+    const orders = savedOrders ? JSON.parse(savedOrders) : [];
+    orders.unshift(orderData);
+    localStorage.setItem('orders', JSON.stringify(orders));
 
     localStorage.removeItem('cart');
     

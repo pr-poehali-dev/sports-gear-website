@@ -259,14 +259,22 @@ const OrderSuccess = () => {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button size="lg" onClick={() => navigate('/')}>
               <Icon name="Home" className="mr-2 h-5 w-5" />
-              Вернуться на главную
+              На главную
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              onClick={() => navigate(`/order-tracking?order=${orderData.orderNumber}`)}
+            >
+              <Icon name="Package" className="mr-2 h-5 w-5" />
+              Отследить заказ
             </Button>
             <Button size="lg" variant="outline" onClick={() => window.print()}>
               <Icon name="Printer" className="mr-2 h-5 w-5" />
-              Распечатать заказ
+              Распечатать
             </Button>
           </div>
 
