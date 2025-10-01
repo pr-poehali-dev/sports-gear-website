@@ -101,18 +101,22 @@ const Checkout = () => {
       return;
     }
 
-    console.log('Order submitted:', {
+    const orderNumber = 'ORD' + Date.now().toString().slice(-8);
+    
+    const orderData = {
+      orderNumber,
       formData,
       deliveryMethod,
       paymentMethod,
       items: cartItems,
-      total
-    });
+      total,
+      deliveryPrice,
+      subtotal
+    };
 
     localStorage.removeItem('cart');
     
-    alert('Заказ успешно оформлен! Спасибо за покупку.');
-    navigate('/');
+    navigate('/order-success', { state: { orderData } });
   };
 
   return (
