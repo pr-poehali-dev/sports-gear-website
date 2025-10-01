@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ interface Product {
 }
 
 interface CartItem {
-  id: number;
+  id: string;
   quantity: number;
 }
 
@@ -29,6 +29,17 @@ const Index = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [quickSearchQuery, setQuickSearchQuery] = useState('');
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
 
   const categories = [
     { id: 'all', name: 'Все категории', icon: 'Grid3X3' },
@@ -137,7 +148,12 @@ const Index = () => {
             <Button variant="ghost" size="sm">
               <Icon name="User" className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="sm" className="relative">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="relative"
+              onClick={() => navigate('/cart')}
+            >
               <Icon name="ShoppingCart" className="h-5 w-5" />
               {cartItemsCount > 0 && (
                 <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center bg-primary">
