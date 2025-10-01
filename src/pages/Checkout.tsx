@@ -109,6 +109,8 @@ const Checkout = () => {
       total
     });
 
+    localStorage.removeItem('cart');
+    
     alert('Заказ успешно оформлен! Спасибо за покупку.');
     navigate('/');
   };
