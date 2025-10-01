@@ -28,7 +28,6 @@ const Index = () => {
   const navigate = useNavigate();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [showFilters, setShowFilters] = useState(false);
   const [quickSearchQuery, setQuickSearchQuery] = useState('');
 
   const categories = [
@@ -134,15 +133,6 @@ const Index = () => {
                 />
                 <Icon name="Search" className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground/50" />
               </div>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-                className={showFilters ? 'bg-primary/10' : ''}
-              >
-                <Icon name="Filter" className="h-5 w-5" />
-                Фильтры
-              </Button>
             </div>
             <Button variant="ghost" size="sm">
               <Icon name="User" className="h-5 w-5" />
@@ -194,84 +184,6 @@ const Index = () => {
           </p>
         </div>
         
-        {showFilters && (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
-            <div className="lg:col-span-1">
-              <ProductFilters
-                filters={filters}
-                onFiltersChange={setFilters}
-                availableCategories={availableOptions.categories}
-                availableSizes={availableOptions.sizes}
-                availableColors={availableOptions.colors}
-                availableBrands={availableOptions.brands}
-                priceRange={priceRange}
-                totalProducts={totalProducts}
-                filteredProducts={filteredProductsCount}
-              />
-            </div>
-            <div className="lg:col-span-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {allFilteredProducts.map((product) => (
-                  <Card 
-                    key={product.id} 
-                    className="group cursor-pointer transition-all duration-200 hover:shadow-xl hover:scale-[1.02] animate-fade-in"
-                    onClick={() => navigate(`/product/${product.id}`)}
-                  >
-                    <CardContent className="p-0">
-                      <div className="relative overflow-hidden rounded-t-lg">
-                        <img 
-                          src={product.images[0]} 
-                          alt={product.name}
-                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
-                        {!product.inStock && (
-                          <Badge className="absolute top-3 left-3 bg-destructive">
-                            Нет в наличии
-                          </Badge>
-                        )}
-                        {product.isNew && (
-                          <Badge className="absolute top-3 left-3 bg-green-600">
-                            Новинка
-                          </Badge>
-                        )}
-                        <Badge className="absolute top-3 right-3 bg-accent">
-                          ★ {product.rating}
-                        </Badge>
-                      </div>
-                      
-                      <div className="p-4">
-                        <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                          {product.name}
-                        </h3>
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-2xl font-bold text-primary">
-                            {product.price.toLocaleString()} ₽
-                          </span>
-                          <Badge variant="outline" className="text-xs">
-                            {product.brand}
-                          </Badge>
-                        </div>
-                        
-                        <Button 
-                          className="w-full" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            addToCart(product.id);
-                          }}
-                          disabled={!product.inStock}
-                        >
-                          <Icon name="Plus" className="mr-2 h-4 w-4" />
-                          {product.inStock ? 'В корзину' : 'Недоступно'}
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
           {categories.map((category) => (
             <Card 
@@ -293,29 +205,46 @@ const Index = () => {
           ))}
         </div>
 
-        {/* Quick Sort */}
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold">
-            {selectedCategory === 'all' ? 'Все товары' : categories.find(cat => cat.id === selectedCategory)?.name} 
-            <span className="text-foreground/60 ml-2">({filteredProducts.length})</span>
-          </h3>
-          <Select value={filters.sortBy} onValueChange={(value) => setFilters({...filters, sortBy: value})}>
-            <SelectTrigger className="w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="popular">По популярности</SelectItem>
-              <SelectItem value="price-asc">Цена: по возрастанию</SelectItem>
-              <SelectItem value="price-desc">Цена: по убыванию</SelectItem>
-              <SelectItem value="newest">Новинки</SelectItem>
-              <SelectItem value="rating">По рейтингу</SelectItem>
-              <SelectItem value="name">По названию</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Filters and Products Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1">
+            <ProductFilters
+              filters={filters}
+              onFiltersChange={setFilters}
+              availableCategories={availableOptions.categories}
+              availableSizes={availableOptions.sizes}
+              availableColors={availableOptions.colors}
+              availableBrands={availableOptions.brands}
+              priceRange={priceRange}
+              totalProducts={totalProducts}
+              filteredProducts={filteredProductsCount}
+            />
+          </div>
+          
+          <div className="lg:col-span-3">
+            {/* Quick Sort */}
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold">
+                {selectedCategory === 'all' ? 'Все товары' : categories.find(cat => cat.id === selectedCategory)?.name} 
+                <span className="text-foreground/60 ml-2">({filteredProducts.length})</span>
+              </h3>
+              <Select value={filters.sortBy} onValueChange={(value) => setFilters({...filters, sortBy: value})}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="popular">По популярности</SelectItem>
+                  <SelectItem value="price-asc">Цена: по возрастанию</SelectItem>
+                  <SelectItem value="price-desc">Цена: по убыванию</SelectItem>
+                  <SelectItem value="newest">Новинки</SelectItem>
+                  <SelectItem value="rating">По рейтингу</SelectItem>
+                  <SelectItem value="name">По названию</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (
             <Card 
               key={product.id} 
@@ -373,6 +302,8 @@ const Index = () => {
               </CardContent>
             </Card>
           ))}
+            </div>
+          </div>
         </div>
       </section>
 
