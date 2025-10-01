@@ -217,17 +217,17 @@ const Checkout = () => {
                   <RadioGroup value={deliveryMethod} onValueChange={setDeliveryMethod}>
                     <div className="space-y-3">
                       {deliveryOptions.map((option) => (
-                        <div
+                        <label
                           key={option.id}
+                          htmlFor={option.id}
                           className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-colors cursor-pointer ${
                             deliveryMethod === option.id
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
                           }`}
-                          onClick={() => setDeliveryMethod(option.id)}
                         >
                           <RadioGroupItem value={option.id} id={option.id} />
-                          <Label htmlFor={option.id} className="flex-1 cursor-pointer">
+                          <div className="flex-1">
                             <div className="flex justify-between items-center">
                               <div>
                                 <p className="font-semibold">{option.name}</p>
@@ -237,8 +237,8 @@ const Checkout = () => {
                                 {option.price === 0 ? 'Бесплатно' : `${option.price} ₽`}
                               </p>
                             </div>
-                          </Label>
-                        </div>
+                          </div>
+                        </label>
                       ))}
                     </div>
                   </RadioGroup>
@@ -313,21 +313,21 @@ const Checkout = () => {
                   <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
                     <div className="space-y-3">
                       {paymentOptions.map((option) => (
-                        <div
+                        <label
                           key={option.id}
+                          htmlFor={`payment-${option.id}`}
                           className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-colors cursor-pointer ${
                             paymentMethod === option.id
                               ? 'border-primary bg-primary/5'
                               : 'border-border hover:border-primary/50'
                           }`}
-                          onClick={() => setPaymentMethod(option.id)}
                         >
                           <RadioGroupItem value={option.id} id={`payment-${option.id}`} />
                           <Icon name={option.icon as any} className="h-5 w-5 text-foreground/70" />
-                          <Label htmlFor={`payment-${option.id}`} className="flex-1 cursor-pointer">
+                          <div className="flex-1">
                             {option.name}
-                          </Label>
-                        </div>
+                          </div>
+                        </label>
                       ))}
                     </div>
                   </RadioGroup>
