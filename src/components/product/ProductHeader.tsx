@@ -38,7 +38,7 @@ const ProductHeader = () => {
           <Button variant="ghost" size="sm">
             <Icon name="Search" className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
             <Icon name="User" className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="sm" className="relative" onClick={() => navigate('/cart')}>
