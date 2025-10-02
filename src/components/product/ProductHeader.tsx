@@ -5,6 +5,15 @@ import Icon from '@/components/ui/icon';
 
 const ProductHeader = () => {
   const navigate = useNavigate();
+  const auth = JSON.parse(localStorage.getItem('auth') || '{"isAuthenticated": false}');
+
+  const handleProfileClick = () => {
+    if (auth.isAuthenticated) {
+      navigate('/profile');
+    } else {
+      navigate('/auth', { state: { from: { pathname: '/profile' } } });
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -38,7 +47,7 @@ const ProductHeader = () => {
           <Button variant="ghost" size="sm">
             <Icon name="Search" className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
+          <Button variant="ghost" size="sm" onClick={handleProfileClick}>
             <Icon name="User" className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="sm" className="relative" onClick={() => navigate('/cart')}>

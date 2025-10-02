@@ -20,16 +20,24 @@ interface Order {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const auth = JSON.parse(localStorage.getItem('auth') || '{"isAuthenticated": false}');
+  const savedUserData = JSON.parse(localStorage.getItem('userData') || '{}');
+  
   const [userData, setUserData] = useState({
-    firstName: 'Иван',
-    lastName: 'Петров',
-    email: 'ivan@example.com',
-    phone: '+7 (999) 123-45-67',
-    city: 'Москва',
-    address: 'ул. Пушкина, д. 10, кв. 5',
-    zipCode: '123456'
+    firstName: auth.user?.firstName || savedUserData.firstName || 'Иван',
+    lastName: auth.user?.lastName || savedUserData.lastName || 'Петров',
+    email: auth.user?.email || savedUserData.email || 'ivan@example.com',
+    phone: auth.user?.phone || savedUserData.phone || '+7 (999) 123-45-67',
+    city: savedUserData.city || 'Москва',
+    address: savedUserData.address || 'ул. Пушкина, д. 10, кв. 5',
+    zipCode: savedUserData.zipCode || '123456'
   });
   const [isEditing, setIsEditing] = useState(false);
+
+  if (!auth.isAuthenticated) {
+    navigate('/auth', { state: { from: { pathname: '/profile' } }, replace: true });
+    return null;
+  }
 
   const orders: Order[] = JSON.parse(localStorage.getItem('orders') || '[]');
   const recentOrders = orders.slice(0, 5);
@@ -67,12 +75,26 @@ const Profile = () => {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold mb-2">Личный кабинет</h1>
-              <p className="text-foreground/70">Управляйте своим профилем и заказами</p>
+              <p className="text-foreground/70">
+                Добро пожаловать, {userData.firstName} {userData.lastName}!
+              </p>
             </div>
-            <Button variant="outline" onClick={() => navigate('/')}>
-              <Icon name="Home" className="mr-2 h-4 w-4" />
-              На главную
-            </Button>
+            <div className="flex space-x-2">
+              <Button variant="outline" onClick={() => navigate('/')}>
+                <Icon name="Home" className="mr-2 h-4 w-4" />
+                На главную
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  localStorage.removeItem('auth');
+                  navigate('/auth');
+                }}
+              >
+                <Icon name="LogOut" className="mr-2 h-4 w-4" />
+                Выйти
+              </Button>
+            </div>
           </div>
 
           <Tabs defaultValue="overview" className="w-full">
