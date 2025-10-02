@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -13,11 +14,20 @@ import Icon from '@/components/ui/icon';
 
 const ProductHeader = () => {
   const navigate = useNavigate();
-  const auth = JSON.parse(localStorage.getItem('auth') || '{"isAuthenticated": false}');
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  const location = useLocation();
+  const [auth, setAuth] = useState(JSON.parse(localStorage.getItem('auth') || '{"isAuthenticated": false}'));
+  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('userData') || '{}'));
+
+  useEffect(() => {
+    const authData = JSON.parse(localStorage.getItem('auth') || '{"isAuthenticated": false}');
+    const user = JSON.parse(localStorage.getItem('userData') || '{}');
+    setAuth(authData);
+    setUserData(user);
+  }, [location]);
 
   const handleLogout = () => {
     localStorage.removeItem('auth');
+    setAuth({ isAuthenticated: false });
     navigate('/auth');
   };
 
