@@ -64,7 +64,7 @@ const ProductHeader = () => {
             <Icon name="Search" className="h-5 w-5" />
           </Button>
           
-          {auth.isAuthenticated ? (
+{auth.isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="relative">
@@ -117,7 +117,14 @@ const ProductHeader = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="ghost" size="sm" onClick={() => navigate('/auth')}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => {
+                console.log('Profile button clicked, navigating to /auth');
+                navigate('/auth');
+              }}
+            >
               <Icon name="User" className="h-5 w-5" />
               <span className="hidden lg:inline ml-2">Войти</span>
             </Button>

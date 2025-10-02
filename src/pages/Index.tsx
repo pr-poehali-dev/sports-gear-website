@@ -145,7 +145,18 @@ const Index = () => {
                 <Icon name="Search" className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground/50" />
               </div>
             </div>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => {
+                const auth = JSON.parse(localStorage.getItem('auth') || '{"isAuthenticated": false}');
+                if (auth.isAuthenticated) {
+                  navigate('/profile');
+                } else {
+                  navigate('/auth');
+                }
+              }}
+            >
               <Icon name="User" className="h-5 w-5" />
             </Button>
             <Button 
